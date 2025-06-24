@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import SearchEngine from "./SearchEngine";
 import Forecast from "./Forecast";
@@ -9,41 +9,21 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 function App() {
   const [query, setQuery] = useState("");
   const [weather, setWeather] = useState({
-    loading: true,
+    loading: false,
     data: {},
     error: false,
   });
 
   const toDate = () => {
     const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December",
     ];
     const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+      "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
     ];
-
     const currentDate = new Date();
-    const date = `${days[currentDate.getDay()]} ${currentDate.getDate()} ${
-      months[currentDate.getMonth()]
-    }`;
-    return date;
+    return `${days[currentDate.getDay()]} ${currentDate.getDate()} ${months[currentDate.getMonth()]}`;
   };
 
   const search = async (event) => {
@@ -57,32 +37,14 @@ function App() {
         const res = await axios.get(url);
         setWeather({ data: res.data, loading: false, error: false });
       } catch (error) {
-        setWeather({ ...weather, data: {}, error: true });
+        setWeather({ data: {}, loading: false, error: true });
         console.error("Error fetching weather data:", error);
       }
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
-      const url = `https://api.shecodes.io/weather/v1/current?query=Rabat&key=${apiKey}`;
-
-      try {
-        const response = await axios.get(url);
-        setWeather({ data: response.data, loading: false, error: false });
-      } catch (error) {
-        setWeather({ data: {}, loading: false, error: true });
-        console.error("Error fetching initial weather data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
     <div className="App">
-      {/* SearchEngine component */}
       <SearchEngine query={query} setQuery={setQuery} search={search} />
 
       {weather.loading && (
@@ -105,8 +67,7 @@ function App() {
         </>
       )}
 
-      {weather && weather.data && weather.data.condition && (
-        // Forecast component
+      {weather.data && weather.data.condition && (
         <Forecast weather={weather} toDate={toDate} />
       )}
     </div>
